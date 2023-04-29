@@ -1,5 +1,6 @@
 # SERVER CONFIGURATIONS UBUNTU
-If you do not remove the default DNS stub resolver on Ubuntu you will have a conflict when starting Pihole docker-compose.yml file
+If you do not remove the default DNS stub resolver on Ubuntu you will have a conflict when starting Pihole docker-compose.yml file\
+dont forget if you use ubuntu disable and remove ufw\
 
 ### -------------------------------------------
 ### UPDATE YOUR SYSTEM
@@ -10,16 +11,12 @@ If you do not remove the default DNS stub resolver on Ubuntu you will have a con
 
 /etc/netplan/netplan1.yml
 
-/var/containers/pihole/docker-compose.yml
+/opt/docker/PiHole/docker-compose.yml
 
 then configure the dns stub resolver and check internet
 
 - **root@comp %** ```sudo docker-compose up -d```
-- **root@comp %** ```sudo docker-compose run pihole pihole -a -p```
-
 - **root@comp %** ```sudo netplan apply```
-- **root@comp %** ```sudo ifconfig grep | inet```
-
 
 ### -------------------------------------------
 ### REMOVE DEFAULT LINUX DNS STUB RESOLVER
@@ -37,17 +34,6 @@ Now modify the resolv file and change the 127.0.0.53 to point to googles dns 8.8
 Now ping will work
 - **root@comp %** ```ping www.google.com```
 
-### -------------------------------------------
-### CHECK DNS OF UBUNTU SERVER
-
-- **root@comp %** ```sudo apt install dnsutils```
-
-test if ok with answer --> status: NOERROR
-- **root@comp %** ```dig sigok.verteiltesysteme.net @192.168.0.222 -p 5335 +dnssec```
-
-test if fail no answer --> status: SERVFAIL
-- **root@comp %** ```dig sigfail.verteiltesysteme.net @192.168.0.222 -p 5335 +dnssec```
-
 
 ### -------------------------------------------
 ### Setup static ipaddr for ubuntu server
@@ -56,17 +42,18 @@ Modify this file to suit your network device -> ens18 ==> eth0
 
 - **root@comp %** ```sudo nano /etc/netplan/netplan1.yaml```
 
+<sub>make sure about your tab in the yaml file as it is very strict and could cause break</sub>
 ```
 network:
-   version: 2
-   ethernets:
-     ens18:
-       dhcp4: False
-       addresses:
-          - 192.168.0.245/16
-       gateway4: 192.168.0.1
-       nameservers:
-          addresses: [8.8.8.8,4.4.4.4]
+  version: 2
+  renderer: networkd
+  ethernets:
+    enp0s3:
+     dhcp4: no
+     addresses: [192.168.1.233/24]
+     gateway4: 192.168.1.1
+     nameservers:
+       addresses: [8.8.8.8,8.8.4.4]
 ```
 
 - **root@comp %** ```sudo netplan apply```
@@ -75,6 +62,6 @@ network:
 
 ### -------------------------------------------
 
-
+#Admin Interface :: http://<your_ipaddr>/admin
 
 
